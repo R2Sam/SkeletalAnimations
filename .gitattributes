@@ -1,0 +1,9 @@
+*.exe linguist-generated
+*.a linguist-generated
+*.sublime-project linguist-generated
+*.sublime-workspace linguist-generated
+
+*raylib.h linguist-generated
+*raymath.h linguist-generated
+*raygui.h linguist-generated
+*rlgl.h linguist-generated
