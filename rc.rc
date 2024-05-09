@@ -8,12 +8,12 @@ BEGIN
     BLOCK "080904E4"
     BEGIN
       VALUE "CompanyName", "Bois's Productions"
-      VALUE "FileDescription", ".. Game"
+      VALUE "FileDescription", "Skeletal Animation"
       VALUE "FileVersion", "0.01"
-      VALUE "InternalName", ".."
-      VALUE "LegalCopyright", "Samuele R. Turci, Oleksandr Afonin"
-      VALUE "OriginalFilename", "...exe"
-      VALUE "ProductName", ".."
+      VALUE "InternalName", "SkelAnimation"
+      VALUE "LegalCopyright", "Samuele R. Turci"
+      VALUE "OriginalFilename", "Skeletal Animation.exe"
+      VALUE "ProductName", "Skeletal Animation"
       VALUE "ProductVersion", "0.01"
     END
   END

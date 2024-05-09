@@ -6,31 +6,38 @@ struct Joint;
 
 struct Segment
 {
+	unsigned int ID;
+
 	Texture2D texture;
+	std::string textureName;
 	Vector2 offset;
 	float scale;
 	float rotation;
 
 	Vector2 position;
-	float length;
+	Vector2 topPos;
+	Vector2 bottomPos;
 	float angle;
 
-	std::vector<Joint*> joints;
-
-	~Segment()
-	{
-		if (IsTextureReady(texture))
-		{
-			UnloadTexture(texture);
-		}
-	}
+	Joint* jointTop = nullptr;
+	Joint* jointBottom = nullptr;
+	unsigned int jointTopID;
+	unsigned int jointBottomID;
 };
+
+void  UpdateSegment(Segment& segment);
 
 struct Joint
 {
+	unsigned int ID;
+	bool selected = false;
+
 	Vector2 position;
-	std::vector<Segment*> Segmets;
+	std::vector<Segment*> segments;
+	std::vector<unsigned int> segmentIDs;
 };
+
+class Skeleton;
 
 class Skeleton
 {
@@ -42,17 +49,18 @@ private:
 public:
 
 	Skeleton();
+	Skeleton(Skeleton* skeleton);
 	~Skeleton();
 
 	std::vector<Segment*> GetSegments();
 	void SetSegments(const std::vector<Segment>& segments);
-	void AddSegment(const Segment& segment);
+	Segment* AddSegment(const Segment& segment);
 
 	std::vector<Joint*> GetJoints();
 	void SetJoints(const std::vector<Joint>& joints);
-	void AddJoint(const Joint& joint);
+	Joint* AddJoint(const Joint& joint);
 
-	void DrawTextures(const float& opacity);
-	void DrawSegments(const float& opacity);
-	void DrawJoints(const float& opacity);
+	void DrawTextures(const unsigned int& opacity);
+	void DrawSegments(const unsigned int& opacity);
+	void DrawJoints(const unsigned int& opacity);
 };

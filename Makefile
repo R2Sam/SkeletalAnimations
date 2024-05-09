@@ -42,11 +42,11 @@ release: $(OBJS)
 
 debugRes: FLAGS = $(DEBUG_FLAGS)
 debugRes: $(OBJS)
-	$(CXX) $(OBJS) $(RES_FLAGS) $(COMMON_FLAGS) $(FLAGS) -o $(BIN_DIR)/"Main" $(LIBS)
+	$(CXX) $(OBJS) $(RES_FLAGS) $(COMMON_FLAGS) $(FLAGS) -o $(BIN_DIR)/"Skeletal Animations" $(LIBS)
 
 releaseRes: FLAGS = $(RELEASE_FLAGS)
 releaseRes: $(OBJS)
-	$(CXX) $(OBJS) $(RES_FLAGS) $(COMMON_FLAGS) $(FLAGS) -o $(BIN_DIR)/"Main" $(LIBS)
+	$(CXX) $(OBJS) $(RES_FLAGS) $(COMMON_FLAGS) $(FLAGS) -o $(BIN_DIR)/"Skeletal Animations" $(LIBS)
 
 single_debug: FLAGS = $(DEBUG_FLAGS)
 single_debug:
