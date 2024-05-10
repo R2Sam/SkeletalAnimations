@@ -115,9 +115,16 @@ void UI::Update(SkelAnimation* skelAnimation)
 
 	skelAnimation->SetFrameTime((float)(1.0 / _animationFPSValue));
 
-	if (_showBackToggle)
+	static bool showBack = _showBackToggle;
+	static unsigned int amount = _showBackAmountValue;
+	static unsigned int opacity = _showBackOpacityValue;
+	if (showBack != _showBackToggle || amount != _showBackAmountValue || opacity != _showBackOpacityValue)
 	{
-		std::unique_ptr<const Event> event = std::make_unique<const ShowBackEvent>(_showBackAmountValue, _showBackOpacityValue);
+		showBack = _showBackToggle;
+		amount = _showBackAmountValue;
+		opacity = _showBackOpacityValue;
+
+		std::unique_ptr<const Event> event = std::make_unique<const ShowBackEvent>(_showBackToggle, _showBackAmountValue, _showBackOpacityValue);
 		_services->GetEventHandler()->AddLocalEvent("Editor", std::move(event));
 	}
 

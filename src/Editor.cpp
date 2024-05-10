@@ -63,6 +63,8 @@ void Editor::OnEvent(std::shared_ptr<const Event>& event)
 			{
 				LoadTex(segment->textureName, segment);
 			}
+
+			UpdateSegment(*segment);
 		}
 
 		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Current Frame: " + std::to_string(_skelAnimation->GetCurrentFrame().first));
@@ -78,7 +80,7 @@ void Editor::OnEvent(std::shared_ptr<const Event>& event)
 
 	if (std::shared_ptr<const ShowBackEvent> showBackEvent = std::dynamic_pointer_cast<const ShowBackEvent>(event))
 	{
-		_showBack = true;
+		_showBack = showBackEvent->toggle;
 		_showBackAmount = showBackEvent->amount;
 		_showBackOpacity = showBackEvent->opacity;
 	}
@@ -112,7 +114,14 @@ void Editor::GetInputs()
 {
 	// Keys
 	_keyDeletePressed = IsKeyPressed(KEY_DELETE);
-	_keySpacePressed = IsKeyPressed(KEY_SPACE);
+	_keyLeftPressed = IsKeyPressed(KEY_LEFT);
+	_keyUpPressed = IsKeyPressed(KEY_UP);
+	_keyRightPressed = IsKeyPressed(KEY_RIGHT);
+	_keyDownPressed = IsKeyPressed(KEY_DOWN);
+	_keyCommaPressed = IsKeyPressed(KEY_COMMA);
+	_keyPeriodPressed = IsKeyPressed(KEY_PERIOD);
+	_keyPlusPressed = IsKeyPressed(KEY_KP_ADD);
+	_keyMinusPressed = IsKeyPressed(KEY_KP_SUBTRACT);
 
 	// Mouse Keys
 	_keyLeftMousePressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
@@ -267,6 +276,16 @@ void Editor::LoadData(const std::string& filePath)
 
 		_skelAnimation->LoadAnimation(DeSerializeAnimation(data));
 		FrameUpdate();
+
+		for (Segment* segment : _segments)
+		{
+			if (!segment->textureName.empty())
+			{
+				LoadTex(segment->textureName, segment);
+			}
+
+			UpdateSegment(*segment);
+		}
 	}
 
 	else
@@ -450,6 +469,7 @@ void Editor::UpdateEditorInput()
 	{
 		Segment segment = {0};
 		segment.scale = 1;
+		segment.thinkness = 2.5;
 		segment.topPos = {100, 100};
 		segment.bottomPos = {0, 0};
 
@@ -511,6 +531,89 @@ void Editor::UpdateEditorInput()
 
 		FrameUpdate();
 		_newJoint = false;
+	}
+
+	if (_keyLeftPressed && _currentSegment)
+	{
+		_currentSegment->offset.x -= 1;
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture x offset: " + DoubleToRoundedString(_currentSegment->offset.x, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
+	}
+
+	if (_keyUpPressed && _currentSegment)
+	{
+		_currentSegment->offset.y -= 1;
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture y offset: " + DoubleToRoundedString(-_currentSegment->offset.y, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
+	}
+
+	if (_keyRightPressed && _currentSegment)
+	{
+		_currentSegment->offset.x += 1;
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture x offset: " + DoubleToRoundedString(_currentSegment->offset.x, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
+	}
+
+	if (_keyDownPressed && _currentSegment)
+	{
+		_currentSegment->offset.y += 1;
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture y offset: " + DoubleToRoundedString(-_currentSegment->offset.y, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
+	}
+
+	if (_keyCommaPressed && _currentSegment)
+	{
+		if (_currentSegment->rotation > 0)
+		{
+			_currentSegment->rotation -= 2.5;
+		}
+
+		else
+		{
+			_currentSegment->rotation = 357.5;
+		}
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture rotation: " + DoubleToRoundedString(_currentSegment->rotation, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
+	}
+
+	if (_keyPeriodPressed && _currentSegment)
+	{
+		if (_currentSegment->rotation < 360)
+		{
+			_currentSegment->rotation += 2.5;
+		}
+
+		else
+		{
+			_currentSegment->rotation = 2.5;
+		}
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture rotation: " + DoubleToRoundedString(_currentSegment->rotation, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
+	}
+
+	if (_keyPlusPressed && _currentSegment)
+	{
+		_currentSegment->scale += 0.05;
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture scale: " + DoubleToRoundedString(_currentSegment->scale, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
+	}
+
+	if (_keyMinusPressed && _currentSegment)
+	{
+		if (_currentSegment->scale > 0.05)
+		{
+			_currentSegment->scale -= 0.05;
+		}
+
+		std::unique_ptr<const Event> event = std::make_unique<const LogWindowMessageEvent>("Segment texture scale: " + DoubleToRoundedString(_currentSegment->scale, 2));
+		_services->GetEventHandler()->AddLocalEvent("UI", std::move(event));
 	}
 }
 
@@ -599,10 +702,15 @@ void Editor::DrawEditor()
 	{
 		if (_showBack)
 		{
-			_skelAnimation->DrawPasteFrame(_showBackAmount, true, true, true, _showBackOpacity, _showBackOpacity / _showBackAmount);
+			float opacity = (_showBackOpacity / 100.0f) * 255.0f;
+			opacity = std::min(opacity, 255.0f);
+			_skelAnimation->DrawPasteFrame(_showBackAmount, true, true, true, opacity, opacity / 20);
 		}
 
-		_skelAnimation->DrawCurrentFrame(true, true, true, 255);
+		else
+		{
+			_skelAnimation->DrawCurrentFrame(true, true, true, 255);
+		}
 	}
 
 	else

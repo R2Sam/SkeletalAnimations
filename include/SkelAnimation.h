@@ -44,7 +44,7 @@ public:
 	void LastFrame();
 
 	void DrawCurrentFrame(const bool& textures, const bool& segments, const bool& joints, const unsigned int& opacity);
-	void DrawPasteFrame(const unsigned int& amount, const bool& textures, const bool& segments, const bool& joints, const unsigned int& opacity, const unsigned int& opacityDropoff);
+	void DrawPasteFrame(const unsigned int& amount, const bool& textures, const bool& segments, const bool& joints, const float& opacity, const float& opacityDropoff);
 
 	bool DrawAnimation(const bool& loop, const unsigned int percentage);
 };

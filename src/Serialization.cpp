@@ -45,6 +45,7 @@ std::vector<Segment> DeSerializeSegments(const std::vector<SegmentData>& data)
         segment.offset.x = segmentData.offsetX;
         segment.offset.y = segmentData.offsetY;
         segment.scale = segmentData.scale;
+        segment.thinkness = 2.5;
         segment.rotation = segmentData.rotation;
         segment.position.x = segmentData.positionX;
         segment.position.y = segmentData.positionY;

@@ -99,10 +99,11 @@ class ShowBackEvent : public Event
 {
 public:
 
+	bool toggle;
 	unsigned int amount;
 	unsigned int opacity;
 
-	ShowBackEvent(const unsigned int& amountIn, const unsigned int& opacityIn) : amount(amountIn), opacity(opacityIn) {}
+	ShowBackEvent(const bool& toggleIn, const unsigned int& amountIn, const unsigned int& opacityIn) : toggle(toggleIn), amount(amountIn), opacity(opacityIn) {}
 };
 
 class SetTexureEvent : public Event

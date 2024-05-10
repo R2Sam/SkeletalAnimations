@@ -25,11 +25,14 @@ private:
 
 	// Keys
 	bool _keyDeletePressed;
-	bool _keySpacePressed;
 	bool _keyLeftPressed;
 	bool _keyUpPressed;
 	bool _keyRightPressed;
 	bool _keyDownPressed;
+	bool _keyCommaPressed;
+	bool _keyPeriodPressed;
+	bool _keyPlusPressed;
+	bool _keyMinusPressed;
 
 	// Mouse keys
 	bool _keyLeftMousePressed;

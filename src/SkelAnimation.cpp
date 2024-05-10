@@ -28,13 +28,12 @@ void SkelAnimation::NewFrame()
 	_duration = _fameCount * _frameTime;
 
 	_currentSkeleton = &_frames[(_currentFrame - 1)];
-
-	Log("Created New Frame: " << _currentFrame);
 }
 
 void SkelAnimation::DeleteFrame()
 {
 	_frames.erase(_frames.begin() + (_currentFrame - 1));
+	_frames.shrink_to_fit();
 	_fameCount--;
 	_currentFrame--;
 
@@ -55,8 +54,6 @@ void SkelAnimation::DeleteFrame()
 		_currentSkeleton = &_frames[(_currentFrame - 1)];
 		_duration = _fameCount * _frameTime;
 	}
-
-	Log("Deleted Frame");
 }
 
 AnimationInfo SkelAnimation::GetAnimation() const
@@ -108,8 +105,6 @@ void SkelAnimation::NextFrame()
 		_currentFrame++;
 		_currentSkeleton = &_frames[(_currentFrame - 1)];
 	}
-
-	Log("Next Frame: " << _currentFrame);
 }
 
 void SkelAnimation::LastFrame()
@@ -119,8 +114,6 @@ void SkelAnimation::LastFrame()
 		_currentFrame--;
 		_currentSkeleton = &_frames[(_currentFrame - 1)];
 	}
-
-	Log("Last Frame: " << _currentFrame);
 }
 
 void SkelAnimation::DrawCurrentFrame(const bool& textures, const bool& segments, const bool& joints, const unsigned int& opacity)
@@ -141,39 +134,32 @@ void SkelAnimation::DrawCurrentFrame(const bool& textures, const bool& segments,
 	}
 }
 
-void SkelAnimation::DrawPasteFrame(const unsigned int& amount, const bool& textures, const bool& segments, const bool& joints, const unsigned int& opacity, const unsigned int& opacityDropoff)
+void SkelAnimation::DrawPasteFrame(const unsigned int& amount, const bool& textures, const bool& segments, const bool& joints, const float& opacity, const float& opacityDropoff)
 {
-	int currentOpacity = opacity + opacityDropoff;
+	float currentOpacity = opacity;
+	float acutalAmount = std::min(amount, _currentFrame);
 
-	for (int i = amount; i > 0; i--)
+	for (int i = 0; i < acutalAmount; i++)
 	{
-		if ((_currentFrame - i) > 0)
+		currentOpacity -= opacityDropoff;
+		currentOpacity = std::max(currentOpacity, 10.0f);
+		currentOpacity = std::min(currentOpacity, 255.0f);
+
+		Skeleton* skeleton = &_frames[(_currentFrame - i) - 1];
+		if (textures)
 		{
-			currentOpacity -= opacityDropoff;
-			currentOpacity = std::max(currentOpacity, 0);
-
-			Skeleton* skeleton = &_frames[(_currentFrame - i) - 1];
-			if (textures)
-			{
-				skeleton->DrawTextures(currentOpacity);
-			}
-
-			if (segments)
-			{
-				skeleton->DrawSegments(currentOpacity);
-			}
-
-			if (joints)
-			{
-				skeleton->DrawJoints(currentOpacity);
-			}
+			skeleton->DrawTextures(currentOpacity);
 		}
 
-		else
+		if (segments)
 		{
-			break;
+			skeleton->DrawSegments(currentOpacity);
 		}
 
+		if (joints)
+		{
+			skeleton->DrawJoints(currentOpacity);
+		}
 	}
 }
 
@@ -183,7 +169,7 @@ bool SkelAnimation::DrawAnimation(const bool& loop, const unsigned int percentag
 	static float time = 0;
 	time += _services->deltaT;
 
-	if (time >= (_frameTime * (float)(1 / (float)(percentage / 100))))
+	if (time >= (_frameTime * (1.0f / (percentage / 100.0f))))
 	{
 		time = 0;
 
