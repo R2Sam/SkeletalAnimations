@@ -105,6 +105,17 @@ void LogWindow::AddMessage(const std::string& message)
 		ParseLine(line);
 	}
 
+	if (_logMessages.size() > 1)
+	{
+		if (_logMessages[_logMessages.size() - 2][0] == '>')
+		{
+			_logMessages[_logMessages.size() - 2].erase(_logMessages[_logMessages.size() - 2].begin());
+			_logMessages[_logMessages.size() - 2].shrink_to_fit();
+		}
+	}
+
+	_logMessages[_logMessages.size() - 1].insert(_logMessages[_logMessages.size() - 1].begin(), '>');
+
 	if (_logMessages.size() > _visibleLinesMax)
 	{
 		_logMessagesToShow.clear();

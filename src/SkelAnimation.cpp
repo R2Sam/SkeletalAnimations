@@ -59,14 +59,46 @@ void SkelAnimation::DeleteFrame()
 	Log("Deleted Frame");
 }
 
+AnimationInfo SkelAnimation::GetAnimation() const
+{
+	AnimationInfo animation;
+
+	animation.frames = _frames;
+	animation.frameTime = _frameTime;
+
+	return animation;
+}
+
+void SkelAnimation::LoadAnimation(const AnimationInfo& animation)
+{
+	_frames = animation.frames;
+	_frameTime = animation.frameTime;
+	_fameCount = _frames.size();
+	_duration = _fameCount * _frameTime;
+
+	_currentFrame = 1;
+	_currentSkeleton = &_frames[_currentFrame - 1];
+}
+
 Skeleton* SkelAnimation::GetCurrentSkeleton()
 {
 	return _currentSkeleton;
 }
 
+std::pair<unsigned int, unsigned int> SkelAnimation::GetCurrentFrame()
+{
+	return std::make_pair(_currentFrame, _fameCount);
+}
+
+float SkelAnimation::GetDuration()
+{
+	return _duration;
+}
+
 void SkelAnimation::SetFrameTime(const float& frameTime)
 {
 	_frameTime = frameTime;
+	_duration = _frameTime * _fameCount;
 }
 
 void SkelAnimation::NextFrame()
@@ -151,7 +183,7 @@ bool SkelAnimation::DrawAnimation(const bool& loop, const unsigned int percentag
 	static float time = 0;
 	time += _services->deltaT;
 
-	if (time >= (_frameTime * (1 / (float)(percentage / 100))))
+	if (time >= (_frameTime * (float)(1 / (float)(percentage / 100))))
 	{
 		time = 0;
 

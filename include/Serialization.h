@@ -8,6 +8,8 @@
 
 #include "Skeleton.h"
 
+struct AnimationInfo;
+
 struct SegmentData
 {
 	unsigned int ID;
@@ -43,12 +45,10 @@ struct JointData
 	float positionX;
 	float positionY;
 
-	std::vector<unsigned int> segments;
-
 	template<class Archive>
 	void serialize(Archive& ar)
 	{
-	    ar(ID, positionX, positionY, segments);
+	    ar(ID, positionX, positionY);
 	}
 };
 
@@ -56,11 +56,25 @@ struct SkeletonData
 {
 	std::vector<SegmentData> segments;
 	std::vector<JointData> joints;
+	unsigned int segmentsIDindex;
+	unsigned int jointsIDindex;
 
 	template<class Archive>
 	void serialize(Archive& ar)
 	{
 	    ar(segments, joints);
+	}
+};
+
+struct AnimationData
+{
+	std::vector<SkeletonData> skeletonData;
+	float frameTime;
+
+	template<class Archive>
+	void serialize(Archive& ar)
+	{
+	    ar(skeletonData, frameTime);
 	}
 };
 
@@ -72,3 +86,6 @@ std::vector<Joint> DeSerializeJoints(const std::vector<JointData>& data);
 
 SkeletonData SerializeSkeleton(Skeleton* skeleton);
 Skeleton DeSerializeSkeleton(const SkeletonData& data);
+
+AnimationData SerializeAnimation(AnimationInfo* animation);
+AnimationInfo DeSerializeAnimation(const AnimationData& data);

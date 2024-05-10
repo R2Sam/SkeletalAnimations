@@ -5,10 +5,9 @@
 #include "Event.h"
 
 class Services;
+class Editor;
 
-class Button;
-
-class MenuScene : public Scene, public EventListener
+class EditorScene : public Scene, public EventListener
 {
 private:
 
@@ -16,14 +15,9 @@ private:
 	Services* _services;
 
 	// Keys
-	bool _keyEscapePressed = false;
+	bool _keyEscapePressed;
 
-	// Mouse
-	Vector2 _mousePos = {0, 0};
-	bool _keyLeftMousePressed = false;
-
-	// Button
-	std::unique_ptr<Button> _levelButton;
+	std::unique_ptr<Editor> _editor;
 
 	void Init() override;
 
@@ -34,8 +28,8 @@ private:
 
 public:
 
-	MenuScene(Services* servicesIn);
-	~MenuScene();
+	EditorScene(Services* servicesIn);
+	~EditorScene();
 
 	void Enter() override;
 	void Exit() override;

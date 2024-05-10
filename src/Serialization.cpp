@@ -1,4 +1,5 @@
 #include "Serialization.h"
+#include "SkelAnimation.h"
 
 std::vector<SegmentData> SerializeSegments(const std::vector<Segment*> segments)
 {
@@ -37,7 +38,7 @@ std::vector<Segment> DeSerializeSegments(const std::vector<SegmentData>& data)
 
 	for (const SegmentData& segmentData: data)
 	{
-		Segment segment;
+		Segment segment = {0};
 
         segment.ID = segmentData.ID;
         segment.textureName = segmentData.textureName;
@@ -74,11 +75,6 @@ std::vector<JointData> SerializeJoints(const std::vector<Joint*> joints)
 		jointData.positionX = joint->position.x;
 		jointData.positionY = joint->position.y;
 
-		for (Segment* segment : joint->segments)
-		{
-			jointData.segments.push_back(segment->ID);
-		}
-
 		data.push_back(jointData);
 	}
 
@@ -91,16 +87,11 @@ std::vector<Joint> DeSerializeJoints(const std::vector<JointData>& data)
 
     for (const JointData& jointData : data)
     {
-        Joint joint;
+        Joint joint = {0};
 
         joint.ID = jointData.ID;
         joint.position.x = jointData.positionX;
         joint.position.y = jointData.positionY;
-
-       	for (const unsigned int& id : jointData.segments)
-       	{
-       		joint.segmentIDs.push_back(id);
-       	}
 
        	joints.push_back(joint);
     }
@@ -114,6 +105,8 @@ SkeletonData SerializeSkeleton(Skeleton* skeleton)
 
 	skeletonData.segments = SerializeSegments(skeleton->GetSegments());
 	skeletonData.joints = SerializeJoints(skeleton->GetJoints());
+	skeletonData.segmentsIDindex = skeleton->segmentsIDindex;
+	skeletonData.jointsIDindex = skeleton->jointsIDindex;
 
 	return skeletonData;
 }
@@ -124,45 +117,36 @@ Skeleton DeSerializeSkeleton(const SkeletonData& data)
 
 	skeleton.SetSegments(DeSerializeSegments(data.segments));
 	skeleton.SetJoints(DeSerializeJoints(data.joints));
-
-	for (Segment* segment : skeleton.GetSegments())
-	{
-		for (Joint* joint : skeleton.GetJoints())
-		{
-			static unsigned int count = 0;
-			if (segment->jointTopID == joint->ID)
-			{
-				segment->jointTop = joint;
-				count++;
-			}
-
-			if (segment->jointBottomID == joint->ID)
-			{
-				segment->jointBottom = joint;
-				count++;
-			}
-
-			if (count == 2)
-			{
-				break;
-			}
-		}
-	}
-
-	for (Joint* joint : skeleton.GetJoints())
-	{
-		for (Segment* segment : skeleton.GetSegments())
-		{
-			for (const unsigned int id : joint->segmentIDs)
-			{
-				if (id == segment->ID)
-				{
-					joint->segments.push_back(segment);
-					break;
-				}
-			}
-		}
-	}
+	skeleton.segmentsIDindex = data.segmentsIDindex;
+	skeleton.jointsIDindex = data.jointsIDindex;
 
 	return skeleton;
+}
+
+AnimationData SerializeAnimation(AnimationInfo* animation)
+{
+	AnimationData data;
+
+	for (Skeleton& skeleton : animation->frames)
+	{
+		data.skeletonData.push_back(SerializeSkeleton(&skeleton));
+	}
+
+	data.frameTime = animation->frameTime;
+
+	return data;
+}
+
+AnimationInfo DeSerializeAnimation(const AnimationData& data)
+{
+	AnimationInfo animation;
+
+	for (const SkeletonData& skelData : data.skeletonData)
+	{
+		animation.frames.push_back(DeSerializeSkeleton(skelData));
+	}
+
+	animation.frameTime = data.frameTime;
+
+	return animation;
 }

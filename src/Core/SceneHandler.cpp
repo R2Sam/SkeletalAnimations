@@ -3,8 +3,7 @@
 #include "Services.h"
 #include "EventHandler.h"
 
-#include "MenuScene.h"
-#include "MainLevelScene.h"
+#include "EditorScene.h"
 
 SceneHandler::SceneHandler(Services* servicesIn) : _services(servicesIn)
 {
@@ -20,15 +19,12 @@ SceneHandler::~SceneHandler()
 void SceneHandler::Init()
 {
 	// Create the scenes
-	
-	std::unique_ptr<Scene> scene = std::make_unique<MenuScene>(_services);
-	AddScene("Menu", scene);
 
-	scene = std::make_unique<MainLevelScene>(_services);
-	AddScene("MainLevel", scene);
+	std::unique_ptr<Scene> scene = std::make_unique<EditorScene>(_services);
+	AddScene("Editor", scene);
 
 	// Make the first scene
-	_currentSceneName = "Menu";
+	_currentSceneName = "Editor";
 
 	auto newScene = _scenes.find(_currentSceneName);
     if (newScene != _scenes.end())

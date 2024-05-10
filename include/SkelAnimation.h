@@ -6,6 +6,7 @@
 #include "Serialization.h"
 
 class Services;
+struct AnimationInfo;
 
 class SkelAnimation
 {
@@ -30,7 +31,12 @@ public:
 	void NewFrame();
 	void DeleteFrame();
 
+	AnimationInfo GetAnimation() const;
+	void LoadAnimation(const AnimationInfo& animation);
+
 	Skeleton* GetCurrentSkeleton();
+	std::pair<unsigned int, unsigned int> GetCurrentFrame();
+	float GetDuration();
 
 	void SetFrameTime(const float& frameTime);
 
@@ -41,4 +47,10 @@ public:
 	void DrawPasteFrame(const unsigned int& amount, const bool& textures, const bool& segments, const bool& joints, const unsigned int& opacity, const unsigned int& opacityDropoff);
 
 	bool DrawAnimation(const bool& loop, const unsigned int percentage);
+};
+
+struct AnimationInfo
+{
+	std::vector<Skeleton> frames;
+	float frameTime;
 };

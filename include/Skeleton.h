@@ -17,12 +17,19 @@ struct Segment
 	Vector2 position;
 	Vector2 topPos;
 	Vector2 bottomPos;
+	Rectangle recTop;
+	Rectangle recBot;
+	float thinkness;
+	std::pair<Vector2, Vector2> topCorners;
+	std::pair<Vector2, Vector2> bottomCorners;
 	float angle;
 
-	Joint* jointTop = nullptr;
-	Joint* jointBottom = nullptr;
-	unsigned int jointTopID;
-	unsigned int jointBottomID;
+	bool selected = false;
+	bool selectedTop = false;
+	bool selectedBottom = false;
+
+	unsigned int jointTopID = 0;
+	unsigned int jointBottomID = 0;
 };
 
 void  UpdateSegment(Segment& segment);
@@ -33,8 +40,7 @@ struct Joint
 	bool selected = false;
 
 	Vector2 position;
-	std::vector<Segment*> segments;
-	std::vector<unsigned int> segmentIDs;
+	Rectangle rec;
 };
 
 class Skeleton;
@@ -48,17 +54,20 @@ private:
 
 public:
 
+	unsigned int segmentsIDindex = 0;
+	unsigned int jointsIDindex = 0;
+
 	Skeleton();
 	Skeleton(Skeleton* skeleton);
 	~Skeleton();
 
 	std::vector<Segment*> GetSegments();
 	void SetSegments(const std::vector<Segment>& segments);
-	Segment* AddSegment(const Segment& segment);
+	Segment* AddSegment(Segment& segment);
 
 	std::vector<Joint*> GetJoints();
 	void SetJoints(const std::vector<Joint>& joints);
-	Joint* AddJoint(const Joint& joint);
+	Joint* AddJoint(Joint& joint);
 
 	void DrawTextures(const unsigned int& opacity);
 	void DrawSegments(const unsigned int& opacity);
