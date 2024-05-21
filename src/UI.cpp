@@ -21,8 +21,8 @@ UI::~UI()
 
 void UI::Init()
 {
-	LogWindowRectangle logWindowRectangle = {Rectangle{0, 0, 864, 80}, Vector2{648, 680}, GRAY, 10, 5};
-	_logWindow.Init(logWindowRectangle, 20, BLACK);
+	LogWindowInfo logWindowInfo = {Rectangle{0, 0, 864, 80}, Vector2{648, 680}, GRAY, 10, 5, 10, DARKGRAY};
+	_logWindow.Init(logWindowInfo, 20, BLACK);
 }
 
 void UI::AddSelfAsListener()
@@ -45,6 +45,9 @@ void UI::GetInputs()
 	// Mouse
 	_mousePos = GetMousePosition();
 	_mouseWheel = GetMouseWheelMove();
+
+	// Mouse keys
+	_keyLeftMouseDown = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 }
 
 void UI::Update(SkelAnimation* skelAnimation)
@@ -155,7 +158,7 @@ void UI::Update(SkelAnimation* skelAnimation)
 		}
 	}
 
-	_logWindow.Update(_mousePos, _mouseWheel);
+	_logWindow.Update(_mousePos, _mouseWheel, _keyLeftMouseDown);
 }
 
 void UI::Draw()

@@ -21,6 +21,7 @@ private:
 	// Mouse
 	Vector2 _mousePos;
 	float _mouseWheel;
+	bool _keyLeftMouseDown;
 
 	// UI elements returns
 	bool _newSegmentPressed = false;
